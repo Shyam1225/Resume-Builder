@@ -43,3 +43,34 @@ export const registerUser = async (req, res) => {
         })
     }
 }
+
+//Login Function
+
+export const loginUser = async (req, res) => {
+    try{
+        const { email , password } = req.body
+        const user = await User.findOne({ email })
+        if(!user) {
+            return res.status(500).json({ message: "Invalid email or Password "})
+        }
+
+        //compare the password
+        const isMatch = await bcrypt.compare(password, user.password)
+        if(!isMatch) {
+            return res.status(500).json({ message: "Invalid Email or Password" })
+        }
+        res.status(201).json({
+            _id: user_.id,
+            name: user.name,
+            email: user.email,
+            token: generateToken(user._id)
+        })
+
+    }
+    catch(err) {
+        res.status(500).json({
+            message: "Server Error",
+            error : error.message
+        })
+    }
+}
